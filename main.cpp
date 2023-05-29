@@ -1,13 +1,10 @@
 #include <iostream>
+#include "Book.h"
 
 int main() 
 {
-    //create a Book class
-    //has a struct{ series, genre, rating, read }
-    //save entries into a map, key is the author: book?
-    //function to print read entries, unread entries
-    //function to update information within the struct
-    //function to add new book
-    
+    BookMap bookData{};
+    bookData.addBook();
+    bookData.viewBook();
     return 0;
 }
