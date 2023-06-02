@@ -9,9 +9,7 @@
 
 class Book
 {
-public:   
-    std::string mBookTitleAuthor;
-    
+public:      
     struct mBookData
     {
         std::string bookTitle;
@@ -34,10 +32,11 @@ public:
     void editBook();
 
 private:
-    std::unordered_map<std::string, Book::mBookData> bookDataMap{};
+    std::unordered_map<std::size_t, Book::mBookData> bookDataMap{};
     
-    const std::unique_ptr<Book::mBookData> findBook();
+    std::unordered_map<std::size_t, Book::mBookData>::iterator findBook();
     bool askReattempt();
+    std::size_t generateKey(const std::string& title, const std::string& author);
     
     template<typename T>
     void takeUserInput(T& valueToUpdate)

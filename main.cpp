@@ -8,7 +8,7 @@ int main()
     bookData.viewBook();
     bookData.editBook();
     bookData.viewBook();
-    bookData.editBook();
-    bookData.viewBook();
+    //bookData.editBook();
+    //bookData.viewBook();
     return 0;
 }
