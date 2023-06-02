@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <functional>
 #include "Book.h"
 
@@ -49,7 +50,10 @@ void BookMap::editBook()
         std::cin >> userFieldChoice;
         std::cout << "What would you like to change " << userFieldChoice << " to? ";
         std::cin >> userValueChoice;
-        if (userFieldChoice == "Title") {
+
+        convertLower(userFieldChoice);
+
+        if (userFieldChoice == "title") {
             std::cout << "Title updated from: " << foundBookData->second.bookTitle
                 << " to: " << userValueChoice;
             foundBookData->second.bookTitle = userValueChoice;
@@ -58,7 +62,7 @@ void BookMap::editBook()
             nodeHandler.key() = generateKey(foundBookData->second.bookTitle, foundBookData->second.bookAuthor);
             bookDataMap.insert(std::move(nodeHandler));
         }
-        else if (userFieldChoice == "Author") {
+        else if (userFieldChoice == "author") {
             std::cout << "Author updated from: " << foundBookData->second.bookAuthor
                 << " to: " << userValueChoice;
             foundBookData->second.bookAuthor = userValueChoice;
@@ -67,17 +71,17 @@ void BookMap::editBook()
             nodeHandler.key() = generateKey(foundBookData->second.bookTitle, foundBookData->second.bookAuthor);
             bookDataMap.insert(std::move(nodeHandler));
         }
-        else if (userFieldChoice == "Series") {
+        else if (userFieldChoice == "series") {
             std::cout << "Series updated from:" << foundBookData->second.series
                 << " to: " << userValueChoice;
             foundBookData->second.series = userValueChoice;
         }
-        else if (userFieldChoice == "Genre") {
+        else if (userFieldChoice == "genre") {
             std::cout << "Genre updated from: " << foundBookData->second.genre
                 << " to: " << userValueChoice;
             foundBookData->second.genre = userValueChoice;
         }
-        else if (userFieldChoice == "Rating") {
+        else if (userFieldChoice == "rating") {
             std::cout << "Rating updated from: " << foundBookData->second.rating
                 << " to: " << userValueChoice;
             foundBookData->second.rating = std::stoi(userValueChoice);
@@ -93,6 +97,17 @@ void BookMap::editBook()
     }
 }
 
+void BookMap::saveBooks()
+{
+    std::ofstream bookFile;
+    bookFile.open("bookData.csv");
+    
+    for (auto book : bookDataMap) {
+        bookFile << book;
+    }
+    bookFile.close();
+}
+
 std::unordered_map<std::size_t, Book::mBookData>::iterator BookMap::findBook()
 {
     bool userReattempt{ 1 };
@@ -103,7 +118,7 @@ std::unordered_map<std::size_t, Book::mBookData>::iterator BookMap::findBook()
         std::cout << "and the author: ";
         std::string userInputAuthor;
         std::cin >> userInputAuthor;
-    
+
         std::size_t key{ generateKey(userInputTitle, userInputAuthor) };
     
         auto search = bookDataMap.find(key);
@@ -133,11 +148,31 @@ std::size_t BookMap::generateKey(const std::string& title, const std::string& au
     return std::hash<std::string>{}(key);
 }
 
+void BookMap::convertLower(std::string& s)
+{
+    std::transform(s.begin(), s.end(), s.begin(),
+    [](char c){ return std::tolower(c); });
+}
+
+void BookMap::loadBooks()
+{
+    //create bookDataMap from bookData.csv
+}
+
 std::ostream& operator<<(std::ostream& out, const Book::mBookData& bookData)
 {
     out << bookData.bookAuthor << ": " << bookData.bookTitle
         << "\n Series: " << bookData.series << "\n Genre: " << bookData.genre
         << "\n Rating: " << bookData.rating << "\n isRead: " << bookData.isRead << '\n';
+
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, std::pair<std::size_t, Book::mBookData> bookDataPair)
+{
+    out << bookDataPair.first << ',' << bookDataPair.second.bookTitle << ',' << bookDataPair.second.bookAuthor
+        << ',' << bookDataPair.second.series << ',' << bookDataPair.second.genre << ',' << bookDataPair.second.rating
+        << ',' << bookDataPair.second.isRead << '\n';
 
     return out;
 }

@@ -21,15 +21,17 @@ public:
     };
 
 private:
-    friend std::ostream& operator<<(std::ostream& out, const Book::mBookData& bookDataMap);
+    friend std::ostream& operator<<(std::ostream& out, const Book::mBookData& bookData);
+    friend std::ostream& operator<<(std::ostream& out, std::pair<std::size_t, Book::mBookData> bookDataPair);
 };
 
-class BookMap //eventually constructor function will read from CSV and store data in memory, similar to REDIS
+class BookMap
 {
 public:
     void addBook();
     void viewBook();
     void editBook();
+    void saveBooks();
 
 private:
     std::unordered_map<std::size_t, Book::mBookData> bookDataMap{};
@@ -37,6 +39,8 @@ private:
     std::unordered_map<std::size_t, Book::mBookData>::iterator findBook();
     bool askReattempt();
     std::size_t generateKey(const std::string& title, const std::string& author);
+    void convertLower(std::string& s);
+    void loadBooks();
     
     template<typename T>
     void takeUserInput(T& valueToUpdate)
@@ -46,7 +50,8 @@ private:
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
-    friend std::ostream& operator<<(std::ostream& out, const Book::mBookData& bookDataMap);
+    friend std::ostream& operator<<(std::ostream& out, const Book::mBookData& bookData);
+    friend std::ostream& operator<<(std::ostream& out, std::pair<std::size_t, Book::mBookData> bookDataPair);
 };
 
 #endif

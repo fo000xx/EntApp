@@ -5,9 +5,10 @@ int main()
 {
     BookMap bookData{};
     bookData.addBook();
-    bookData.viewBook();
-    bookData.editBook();
-    bookData.viewBook();
+    bookData.saveBooks();
+    //bookData.viewBook();
+    ///bookData.editBook();
+    //bookData.viewBook();
     //bookData.editBook();
     //bookData.viewBook();
     return 0;
