@@ -28,6 +28,8 @@ private:
 class BookMap
 {
 public:
+    BookMap();
+    
     void addBook();
     void viewBook();
     void editBook();

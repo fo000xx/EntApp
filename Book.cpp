@@ -1,8 +1,16 @@
 #include <cstdlib>
+#include <exception>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <functional>
+#include <string>
 #include "Book.h"
+
+BookMap::BookMap()
+{
+  loadBooks();  
+}
 
 void BookMap::addBook()
 {
@@ -100,7 +108,15 @@ void BookMap::editBook()
 void BookMap::saveBooks()
 {
     std::ofstream bookFile;
+    try {
     bookFile.open("bookData.csv");
+    if (!bookFile.is_open()) {
+        throw std::runtime_error("could not open file.");
+    }
+    } catch (const std::exception& exception) {
+        std::cout << "Unable to save bookData.csv " << exception.what() 
+            << "Any new entries are at risk of not being backed-up\n";
+    }
     
     for (auto book : bookDataMap) {
         bookFile << book;
@@ -145,7 +161,10 @@ bool BookMap::askReattempt()
 std::size_t BookMap::generateKey(const std::string& title, const std::string& author)
 {
     std::string key(author + ": " + title);
-    return std::hash<std::string>{}(key);
+    std::size_t originalHash{ std::hash<std::string>{}(key)};
+
+    std::size_t truncatedHash{ originalHash / 100'000'000'000 };
+    return truncatedHash;
 }
 
 void BookMap::convertLower(std::string& s)
@@ -156,7 +175,43 @@ void BookMap::convertLower(std::string& s)
 
 void BookMap::loadBooks()
 {
-    //create bookDataMap from bookData.csv
+    std::ifstream bookFile;
+    try {
+    bookFile.open("bookData.csv");
+    if (!bookFile.is_open()) {
+        throw std::runtime_error("could not open file.");
+    }
+    } catch (const std::exception& exception) {
+        std::cout << "Unable to load bookData.csv " << exception.what() 
+            << "Any data saved in long-term storage is not present.\n";
+    }
+    
+    std::string dataLine;
+    while(std::getline(bookFile, dataLine)) {
+        std::istringstream inStringStream(dataLine);
+        std::string keyString;     
+   
+        if (std::getline(inStringStream, keyString, ',')) {
+            std::size_t key{ static_cast<std::size_t>(std::stoi(keyString)) };
+            std::string inBookTitle, inBookAuthor, inSeries, inGenre, inRating, inIsRead;
+            if (std::getline(inStringStream, inBookTitle, ',') && 
+                std::getline(inStringStream, inBookAuthor, ',') &&
+                std::getline(inStringStream, inSeries, ',') &&
+                std::getline(inStringStream, inGenre, ',') &&
+                std::getline(inStringStream, inRating, ',') &&
+                std::getline(inStringStream, inIsRead, ',')) {
+                    Book::mBookData bookDataStruct;
+                    bookDataStruct.bookTitle = inBookTitle;
+                    bookDataStruct.bookAuthor = inBookAuthor;
+                    bookDataStruct.series = inSeries;
+                    bookDataStruct.genre = inGenre;
+                    bookDataStruct.rating = std::stoi(inRating);
+                    bookDataStruct.isRead = (inIsRead == "1");
+
+                bookDataMap.insert({key, bookDataStruct});    
+            }
+        }
+    }
 }
 
 std::ostream& operator<<(std::ostream& out, const Book::mBookData& bookData)

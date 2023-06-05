@@ -4,12 +4,12 @@
 int main() 
 {
     BookMap bookData{};
+    //bookData.loadBooks();
     bookData.addBook();
     bookData.saveBooks();
-    //bookData.viewBook();
-    ///bookData.editBook();
-    //bookData.viewBook();
-    //bookData.editBook();
-    //bookData.viewBook();
+    //bookData.loadBooks();
+    //bookData.addBook();
+    //bookData.saveBooks();
+
     return 0;
 }
