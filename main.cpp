@@ -1,15 +1,14 @@
 #include <iostream>
 #include "Book.h"
+#include "Games.h"
 
 int main() 
 {
     BookMap bookData{};
-    //bookData.loadBooks();
-    bookData.addBook();
-    bookData.saveBooks();
-    //bookData.loadBooks();
-    //bookData.addBook();
-    //bookData.saveBooks();
+    GameMap gameData{};
+    gameData.addGame();
+    gameData.editGame();
+    gameData.saveGames();
 
     return 0;
 }

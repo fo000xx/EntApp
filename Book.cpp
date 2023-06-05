@@ -5,6 +5,7 @@
 #include <sstream>
 #include <functional>
 #include <string>
+#include <cmath>
 #include "Book.h"
 
 BookMap::BookMap()
@@ -38,7 +39,7 @@ void BookMap::viewBook()
     bool userReattempt{ 1 };
     while (userReattempt) {
         auto foundBookData{ findBook() };
-        if (foundBookData != nullptr) {
+        if (foundBookData != std::end(bookDataMap)) {
             std::cout << foundBookData->second;
             return;
         }
@@ -163,7 +164,13 @@ std::size_t BookMap::generateKey(const std::string& title, const std::string& au
     std::string key(author + ": " + title);
     std::size_t originalHash{ std::hash<std::string>{}(key)};
 
-    std::size_t truncatedHash{ originalHash / 100'000'000'000 };
+    int numDigits = static_cast<int>(std::log10(originalHash)) + 1;
+    std::size_t truncatedHash { originalHash };
+    if (numDigits > 10) {
+        int divisor = static_cast<int>(std::pow(10, numDigits - 9));
+        truncatedHash = originalHash / divisor;
+    }
+
     return truncatedHash;
 }
 
