@@ -167,12 +167,9 @@ std::size_t GameMap::generateKey(const std::string& title)
 {
     std::size_t originalHash{ std::hash<std::string>{}(title)};
 
-    int numDigits = static_cast<int>(std::log10(originalHash)) + 1;
-    std::size_t truncatedHash { originalHash };
-    if (numDigits > 10) {
-        int divisor = static_cast<int>(std::pow(10, numDigits - 9));
-        truncatedHash = originalHash / divisor;
-    }
+    std::string hashString{ std::to_string(originalHash) };
+    std::string truncHashString{ hashString.substr(0,9) };
+    int truncatedHash{ std::stoi(truncHashString) };
 
     return truncatedHash;
 }

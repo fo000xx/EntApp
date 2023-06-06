@@ -164,12 +164,9 @@ std::size_t BookMap::generateKey(const std::string& title, const std::string& au
     std::string key(author + ": " + title);
     std::size_t originalHash{ std::hash<std::string>{}(key)};
 
-    int numDigits = static_cast<int>(std::log10(originalHash)) + 1;
-    std::size_t truncatedHash { originalHash };
-    if (numDigits > 10) {
-        int divisor = static_cast<int>(std::pow(10, numDigits - 9));
-        truncatedHash = originalHash / divisor;
-    }
+    std::string hashString{ std::to_string(originalHash) };
+    std::string truncHashString{ hashString.substr(0,9) };
+    int truncatedHash{ std::stoi(truncHashString) };
 
     return truncatedHash;
 }
@@ -224,8 +221,8 @@ void BookMap::loadBooks()
 std::ostream& operator<<(std::ostream& out, const Book::mBookData& bookData)
 {
     out << bookData.bookAuthor << ": " << bookData.bookTitle
-        << "\n Series: " << bookData.series << "\n Genre: " << bookData.genre
-        << "\n Rating: " << bookData.rating << "\n isRead: " << bookData.isRead << '\n';
+        << "\nSeries: " << bookData.series << "\nGenre: " << bookData.genre
+        << "\nRating: " << bookData.rating << "\nisRead: " << bookData.isRead << '\n';
 
     return out;
 }

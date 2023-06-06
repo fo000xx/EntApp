@@ -26,7 +26,7 @@ The data will be stored in a redis-like app that communicates to the client usin
 * COMPLETE Add game objects, similar mechanisms as above
 
 ### TV/Film
-* Add screen objects
+* COMPLETE Add screen objects
 
 ### Other
 * Tidy up README to include proper instructions etc.
