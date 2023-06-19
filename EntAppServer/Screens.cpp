@@ -86,14 +86,12 @@ std::unordered_map<std::size_t, Screen::mScreenData>::iterator ScreenMap::findSc
 std::size_t ScreenMap::generateKey(const std::string& type, const std::string& title)
 {
     std::string key(type + title);
-    std::cout << '\n' << type << "--" << title << '\n';
     std::size_t originalHash{ std::hash<std::string>{}(key)};
 
     std::string hashString{ std::to_string(originalHash) };
     std::string truncHashString{ hashString.substr(0,9) };
     int truncatedHash{ std::stoi(truncHashString) };
     
-    std::cout << '\n' << truncatedHash << '\n';
     return truncatedHash;
 }
 

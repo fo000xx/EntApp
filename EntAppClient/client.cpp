@@ -95,7 +95,7 @@ std::string Client::getAction()
 
 std::string Client::getContentKey(const std::string& contentType)
 {
-    std::string rawKey{};
+    std::string rawKey{}; //commas are added to split out \n or other unwanted, lingering characters
     if (contentType == "books") {
         std::string author{};
         std::string title{};
@@ -104,7 +104,7 @@ std::string Client::getContentKey(const std::string& contentType)
         std::cout << "Title: ";
         std::cin >> title;
         
-        rawKey = (author + ',' + title);
+        rawKey = (author + ',' + title + ',');
     }
 
     if (contentType == "screens") {
@@ -115,8 +115,9 @@ std::string Client::getContentKey(const std::string& contentType)
         std::cout << "Title: ";
         std::cin >> title;
 
-        rawKey = (type + ',' + title);
+        rawKey = (type + ',' + title + ',');
     }
+
     return rawKey;
 }
 

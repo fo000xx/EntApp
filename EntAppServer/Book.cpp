@@ -79,7 +79,6 @@ std::unordered_map<std::size_t, Book::mBookData>::iterator BookMap::findBook(con
 {
     
     std::size_t key{ generateKey(author, title) };
-    
     auto search = bookDataMap.find(key);
     if (search != bookDataMap.end()) {
         return search;
