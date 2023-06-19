@@ -2,10 +2,7 @@
 #define CLIENT_H
 
 #include <boost/asio.hpp>
-#include <boost/asio/io_service.hpp>
-#include <iostream>
 #include <string>
-#include <string_view>
 
 using namespace boost::asio::ip;
 
@@ -16,14 +13,21 @@ public:
 
     void receiveConfirmation(boost::system::error_code& error);
     void sendMessage();
-    void userInputMessage();
+    void gatherData();
 
 private:
     std::string mIPAddr;
     int mPortNum;
     tcp::socket mSocket;
     boost::asio::streambuf mReceiveBuffer;
-    std::string mUserInput{ "defaultHello\n" };
+    std::string mOutMessage;
+
+    std::string getContentType();
+    void convertLower(std::string& stringToConvert);
+    std::string getAction();
+    std::string getContentKey(const std::string& contentType);
+    std::string getContentData(const std::string& contentType);
+
 };
 
 #endif

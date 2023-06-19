@@ -2,8 +2,7 @@
 #define CONNECTION_H
 
 #include <boost/asio.hpp>
-#include <boost/asio/io_context.hpp>
-#include <boost/bind/bind.hpp>
+#include <vector>
 
 class tcpServer;
 using namespace boost::asio::ip;
@@ -30,12 +29,14 @@ private:
     void parseAndActionCommand();
     void writeOutgoing();
     void writeHandler(const boost::system::error_code& errorMessage);
+    void manageBooks();
 
     tcp::socket mSocket;
     boost::asio::streambuf mReceiveBuffer;
     tcpServer& mServer;
     std::string mReceivedMsg;
-    std::string_view mResponse;
+    std::string mResponse;
+    std::vector<std::string> mSplitStrings;
 
 };
 

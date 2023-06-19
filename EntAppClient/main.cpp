@@ -1,7 +1,5 @@
 #include <boost/asio.hpp>
-#include <boost/asio/io_context.hpp>
 #include <iostream>
-#include <string_view>
 #include "Client.h"
 
 using namespace boost::asio::ip;
@@ -12,7 +10,14 @@ int main()
     boost::asio::io_context ioContext;
     Client client(ipAddr, 1234, ioContext);
 
-    client.userInputMessage();
+    //opening prompt > book, screen, game
+    client.gatherData();
+    //select book
+    //get, set, del
+    //get -> input key
+    //send key, return struct
+    //print struct
+
     client.sendMessage();
 
     return 0;

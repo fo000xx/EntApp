@@ -1,5 +1,4 @@
 #include <boost/asio.hpp>
-#include <boost/asio/io_service.hpp>
 #include <iostream>
 #include <string>
 #include "Client.h"
@@ -26,15 +25,8 @@ void Client::receiveConfirmation(boost::system::error_code& error)
 
 void Client::sendMessage()
 {
-    std::string outMessage;
-    if (mUserInput != "defaultHello\n") {
-        outMessage = mUserInput;
-    }
-    else {
-        outMessage =  "Default Message\n";
-    }
     boost::system::error_code sendError;
-    boost::asio::write(mSocket, boost::asio::buffer(outMessage), sendError);
+    boost::asio::write(mSocket, boost::asio::buffer(mOutMessage), sendError);
 
     if (!sendError) {
         std::cout << "Client sent command!\n";
@@ -46,9 +38,108 @@ void Client::sendMessage()
     receiveConfirmation(sendError);
 }
 
-void Client::userInputMessage()
+void Client::gatherData()
 {
-    std::cout << "Enter a message for the server: (set, get, del) ";
-    std::getline(std::cin, mUserInput);
-    mUserInput += '\n';
+    std::string contentType{ getContentType() };
+    std::string requiredAction{ getAction() };
+    
+    std::string contentData{};
+    if (requiredAction == "set") {
+        contentData = getContentData(contentType);
+    }
+    else {
+        contentData = getContentKey(contentType);
+    }
+
+    mOutMessage = (contentType + ',' + requiredAction + ',' + contentData + '\n');
+}
+
+void Client::convertLower(std::string& stringToConvert)
+{
+    std::transform(stringToConvert.begin(), stringToConvert.end(), stringToConvert.begin(),
+    [](char c){ return std::tolower(c); });
+}
+
+std::string Client::getContentType()
+{
+    while (true) {
+        std::cout << "Would you like to access Books, Screens or Games? ";
+        std::string userTypeChoice{};
+        std::cin >> userTypeChoice;
+        convertLower(userTypeChoice);
+        if (userTypeChoice == "books" || userTypeChoice == "screens" || userTypeChoice == "games") {
+            return userTypeChoice;
+        }
+        else {
+            std::cout << "Invalid entry, try again.";
+        }
+    }
+}
+
+std::string Client::getAction()
+{
+    while (true) {
+        std::cout << "Would you like to access get, set or del? ";
+        std::string userActionChoice{};
+        std::cin >> userActionChoice;
+        convertLower(userActionChoice);
+
+        if (userActionChoice == "get" || userActionChoice == "set" || userActionChoice == "del") {
+            return userActionChoice;
+        }
+        else {
+            std::cout << "Invalid entry, try again.";
+        }
+    }  
+}
+
+std::string Client::getContentKey(const std::string& contentType)
+{
+    std::string rawKey{};
+    if (contentType == "books") {
+        std::string author{};
+        std::string title{};
+        std::cout << "Please provide the author and title.\nAuthor: ";
+        std::cin >> author;
+        std::cout << "Title: ";
+        std::cin >> title;
+        
+        rawKey = (author + ',' + title);
+    }
+    return rawKey;
+}
+
+std::string Client::getContentData(const std::string& contentType)
+{
+    std::string finalData{};
+    
+    if (contentType == "books") {
+        std::string author{};
+        std::string title{};
+        std::string series{};
+        std::string genre{};
+        std::string rating{};
+        std::string isRead{};
+
+        std::cout << "To add a book, please provide the following details:\n Author: ";
+        std::cin >> author;
+        
+        std::cout << "Title: ";
+        std::cin >> title;
+
+        std::cout << "Series: ";
+        std::cin >> series;
+        
+        std::cout << "Genre: ";
+        std::cin >> genre;
+        
+        std::cout << "Rating (1-5): ";
+        std::cin >> rating;
+        
+        std::cout << "isRead (1/0): ";
+        std::cin >> isRead;
+
+        finalData = (author + ',' + title + ',' + series + ',' + genre + ',' + rating + ',' + isRead);
+    }
+    return finalData;
 }

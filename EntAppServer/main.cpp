@@ -1,14 +1,11 @@
 #include <boost/asio.hpp>
 #include <iostream>
-#include "Book.h"
-#include "Games.h"
-#include "Screens.h"
 #include "Server.h"
 
 using namespace boost::asio::ip;
 
 int main()
-{
+{    
     try {
     boost::asio::io_context ioContext;
     tcpServer server(1234, ioContext);

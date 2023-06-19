@@ -5,6 +5,7 @@
 #include <limits>
 #include <iostream>
 #include <unordered_map>
+#include <vector>
 
 class Book
 {
@@ -29,16 +30,16 @@ class BookMap
 public:
     BookMap();
     
-    void addBook();
-    void viewBook();
-    void editBook();
+    void addBook(std::vector<std::string>& bookData);
+    std::string viewBook(const std::string& author, const std::string& title);
+    void editBook(const std::string& author, const std::string& title);
     void saveBooks();
+    void deleteBook(const std::string& author, const std::string& title);
 
 private:
     std::unordered_map<std::size_t, Book::mBookData> bookDataMap{};
     
-    std::unordered_map<std::size_t, Book::mBookData>::iterator findBook();
-    bool askReattempt();
+    std::unordered_map<std::size_t, Book::mBookData>::iterator findBook(const std::string& author, const std::string& title);
     std::size_t generateKey(const std::string& title, const std::string& author);
     void convertLower(std::string& s);
     void loadBooks();

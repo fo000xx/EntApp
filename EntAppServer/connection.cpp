@@ -59,8 +59,45 @@ void tcpConnection::writeHandler(const boost::system::error_code& errorMessage)
 
 void tcpConnection::parseAndActionCommand()
 {
+    std::stringstream receivedStringStream{ mReceivedMsg };
+    std::string token{};
 
+    while (std::getline(receivedStringStream, token, ',')) {
+        mSplitStrings.push_back(token);
+    }
+
+    if (mSplitStrings[0] == "books") {
+        manageBooks();
+    }
+    else if (mSplitStrings[0] == "screens") {
+        //manageScreens();
+    }
+    else if (mSplitStrings[0] == "games") {
+        //manageGames();
+    }
+
+    for (auto elem : mSplitStrings) {
+        std::cout << elem << "||";
+    }
 }
+
+void tcpConnection::manageBooks()
+{
+    if (mSplitStrings[1] == "get") {
+        mResponse = mServer.mBooks.viewBook(mSplitStrings[2], mSplitStrings[3]);
+    }
+    if (mSplitStrings[1] == "set") {
+        //if book doesn't exist, add new
+        //if book exists, edit old
+        mServer.mBooks.addBook(mSplitStrings);
+    }
+    if (mSplitStrings[1] == "del") {
+        mServer.mBooks.deleteBook(mSplitStrings[2], mSplitStrings[3]);
+    }
+
+    writeOutgoing();
+}
+
 /*
 //probably should be refactored if this was to scale up.
 void tcpConnection::parseAndActionCommand()
