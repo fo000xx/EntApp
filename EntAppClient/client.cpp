@@ -118,6 +118,15 @@ std::string Client::getContentKey(const std::string& contentType)
         rawKey = (type + ',' + title + ',');
     }
 
+    if (contentType == "games") {
+        std::string title{};
+        std::cout << "Title: ";
+        std::cin >> title;
+
+        rawKey = (title + ',');
+    }
+
+
     return rawKey;
 }
 
@@ -174,5 +183,37 @@ std::string Client::getContentData(const std::string& contentType)
 
         finalData = (type + ',' + title + ',' + rating + ',' + isWatched);
     }
+
+    if (contentType == "games") {
+        std::string title{};
+        std::string genre{};
+        std::string platform{};
+        std::string rating{};
+        std::string isMultiplayer{};
+        std::string isPlayed{};
+        std::string isOwned{};
+
+        std::cout << "To add a game, please provide the following details:\nTitle: ";
+        std::cin >> title;
+
+        std::cout << "Genre: ";
+        std::cin >> genre;
+
+        std::cout << "Platform: ";
+        std::cin >> platform;
+
+        std::cout << "Rating (1-5): ";
+        std::cin >> rating;
+
+        std::cout << "isMultiplayer (0/1): ";
+        std::cin >> isMultiplayer;
+
+        std::cout << "isPlayed (0/1): ";
+        std::cin >> isPlayed;
+
+        std::cout << "isOwned (0/1): ";
+        std::cin >> isOwned;
+    }
+
     return finalData;
 }

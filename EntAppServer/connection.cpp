@@ -73,7 +73,7 @@ void tcpConnection::parseAndActionCommand()
         manageScreens();
     }
     else if (mSplitStrings[0] == "games") {
-        //manageGames();
+        manageGames();
     }
 
     for (auto elem : mSplitStrings) {
@@ -110,6 +110,23 @@ void tcpConnection::manageScreens()
     if (mSplitStrings[1] == "del") {
         mServer.mScreens.deleteScreen(mSplitStrings[2], mSplitStrings[3]);
         mResponse = "Screen entry deleted.\n";
+    }
+
+    writeOutgoing();
+}
+
+void tcpConnection::manageGames()
+{
+    if (mSplitStrings[1] == "get") {
+        mResponse = mServer.mGames.viewGame(mSplitStrings[2]);
+    }
+    if (mSplitStrings[1] == "set") {
+        mServer.mGames.addGame(mSplitStrings);
+        mResponse = "Game entry set.\n";
+    }
+    if (mSplitStrings[1] == "del") {
+        mServer.mGames.deleteGame(mSplitStrings[2]);
+        mResponse = "Game entry deleted.\n";
     }
 
     writeOutgoing();

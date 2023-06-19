@@ -1,11 +1,7 @@
-#include <cstdlib>
-#include <exception>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <functional>
-#include <string>
-#include <cmath>
 #include "Screens.h"
 
 ScreenMap::ScreenMap()
@@ -91,7 +87,7 @@ std::size_t ScreenMap::generateKey(const std::string& type, const std::string& t
     std::string hashString{ std::to_string(originalHash) };
     std::string truncHashString{ hashString.substr(0,9) };
     int truncatedHash{ std::stoi(truncHashString) };
-    
+
     return truncatedHash;
 }
 

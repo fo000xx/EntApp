@@ -3,7 +3,7 @@
 
 #include <string>
 #include <limits>
-#include <iostream>
+#include <vector>
 #include <unordered_map>
 
 class Game
@@ -21,7 +21,6 @@ public:
     };
 
 private:
-    friend std::ostream& operator<<(std::ostream& out, const Game::mGameData& gameData);
     friend std::ostream& operator<<(std::ostream& out, std::pair<std::size_t, Game::mGameData> gameDataPair);
 
 };
@@ -31,29 +30,19 @@ class GameMap
 public:
     GameMap();
 
-    void addGame();
-    void viewGame();
-    void editGame();
+    void addGame(std::vector<std::string>& rawGameData);
+    std::string viewGame(const std::string& title);
     void saveGames();
+    void deleteGame(const std::string& title);
 
 private:
     std::unordered_map<std::size_t, Game::mGameData> gameDataMap{};
 
-    std::unordered_map<std::size_t, Game::mGameData>::iterator findGame();
-    bool askReattempt();
+    std::unordered_map<std::size_t, Game::mGameData>::iterator findGame(const std::string& title);
     std::size_t generateKey(const std::string& title);
     void convertLower(std::string& s);
     void loadGames();
 
-    template<typename T>
-    void takeUserInput(T& valueToUpdate)
-    {
-        std::cin.clear();
-        std::cin >> valueToUpdate;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-
-    friend std::ostream& operator<<(std::ostream& out, const Game::mGameData& bookData);
     friend std::ostream& operator<<(std::ostream& out, std::pair<std::size_t, Game::mGameData> bookDataPair);
 
 };

@@ -1,11 +1,7 @@
-#include <cstdlib>
-#include <exception>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <functional>
-#include <string>
-#include <cmath>
 #include "Games.h"
 
 GameMap::GameMap()
@@ -13,104 +9,53 @@ GameMap::GameMap()
     loadGames();
 }
 
-void GameMap::addGame()
+void GameMap::addGame(std::vector<std::string>& rawGameData)
 {
     Game::mGameData gameData;
-    std::cout << "To add a game, please provide the following details:\n Title: ";
-    takeUserInput(gameData.gameTitle);
-    std::cout << "Genre: ";
-    takeUserInput(gameData.gameGenre);
-    std::cout << "Platform: ";
-    takeUserInput(gameData.platform);
-    std::cout << "Rating: ";
-    takeUserInput(gameData.rating);
-    std::cout << "isMultiplayer (1/0)";
-    takeUserInput(gameData.isMultiplayer);
-    std::cout << "isPlayed (1/0)";
-    takeUserInput(gameData.isPlayed);
-    std::cout << "isOwned (1/0)";
-    takeUserInput(gameData.isOwned);
+    gameData.gameTitle = rawGameData[2];
+    gameData.gameGenre = rawGameData[3];
+    gameData.platform = rawGameData[4];
+    gameData.rating = std::stoi(rawGameData[5]);
+    gameData.isMultiplayer = [](std::string rawGameData[6]) -> bool {
+            return (rawGameData[6] == "1") ? true : false;
+        };
+    gameData.isPlayed = [](std::string rawGameData[7]) -> bool {
+            return (rawGameData[7] == "1") ? true : false;
+        };
+    gameData.isOwned = [](std::string rawGameData[8]) -> bool {
+            return (rawGameData[8] == "1") ? true : false;
+        };
 
     std::size_t key{ generateKey(gameData.gameTitle) };
 
-    gameDataMap.insert({key, gameData});
-}
-
-void GameMap::viewGame()
-{
-    bool userReattempt{ 1 };
-    while (userReattempt) {
-        auto foundGameData{ findGame() };
-        if (foundGameData != std::end(gameDataMap)) {
-            std::cout << foundGameData->second;
-            return;
-        }
-        else {
-            userReattempt = askReattempt();
-        }
+    auto search = gameDataMap.find(key);
+    if (search == gameDataMap.end()) {
+        gameDataMap.insert({key, gameData});
+    }
+    else {
+        gameDataMap[key] = gameData;
     }
 }
 
-void GameMap::editGame()
+std::string GameMap::viewGame(const std::string& title)
 {
-    auto foundGameData{ findGame() };
+    std::string returnString{};
+
+    auto foundGameData{ findGame(title) };
     if (foundGameData != std::end(gameDataMap)) {
-        std::string userFieldChoice{};
-        std::string userValueChoice{};
-        std::cout << "Which field would you like to edit? ";
-        std::cin >> userFieldChoice;
-        std::cout << "What would you like to change " << userFieldChoice << " to? ";
-        std::cin >> userValueChoice;
-
-        convertLower(userFieldChoice);
-
-        if (userFieldChoice == "title") {
-            std::cout << "Title updated from: " << foundGameData->second.gameTitle
-                << " to " << userValueChoice;
-            foundGameData->second.gameTitle = userValueChoice;
-
-            auto nodeHandler = gameDataMap.extract(foundGameData);
-            nodeHandler.key() = generateKey(foundGameData->second.gameTitle);
-            gameDataMap.insert(std::move(nodeHandler));
-        }
-        else if (userFieldChoice == "genre") {
-            std::cout << "Genre updated from: " << foundGameData->second.gameGenre
-                << " to " << userValueChoice;
-            foundGameData->second.gameGenre = userValueChoice;
-        }
-        else if (userFieldChoice == "platform") {
-            std::cout << "Platform updated from: " << foundGameData->second.platform
-                << " to " << userValueChoice;
-            foundGameData->second.platform = userValueChoice;
-        }
-        else if (userFieldChoice == "rating") {
-            std::cout << "Platform updated from: " << foundGameData->second.rating
-                << " to " << userValueChoice;
-            foundGameData->second.rating = std::stoi(userValueChoice);
-        }
-        else if (userFieldChoice == "isMultiplayer") {
-            std::cout << "isRead updated from: " << foundGameData->second.isMultiplayer
-                << " to: " << userValueChoice;
-            foundGameData->second.isMultiplayer = [](std::string userValueChoice) -> bool {
-                return (userValueChoice == "1") ? true : false;
-            };
-        }
-        else if (userFieldChoice == "isPlayed") {
-            std::cout << "isRead updated from: " << foundGameData->second.isPlayed
-                << " to: " << userValueChoice;
-            foundGameData->second.isPlayed = [](std::string userValueChoice) -> bool {
-                return (userValueChoice == "1") ? true : false;
-            };
-        }
-        else if (userFieldChoice == "isOwned") {
-            std::cout << "isRead updated from: " << foundGameData->second.isOwned
-                << " to: " << userValueChoice;
-            foundGameData->second.isOwned = [](std::string userValueChoice) -> bool {
-                return (userValueChoice == "1") ? true : false;
-            };
-        }
-        std::cout << '\n';
+        returnString = (foundGameData->second.gameTitle + ','
+        + foundGameData->second.gameGenre + ','
+        + foundGameData->second.platform + ','
+        + std::to_string(foundGameData->second.rating) + ','
+        + std::to_string(foundGameData->second.isMultiplayer) + ','
+        + std::to_string(foundGameData->second.isPlayed) + ','
+        + std::to_string(foundGameData->second.isOwned) + ',');
     }
+    else {
+        returnString = "Game not found";
+    }
+
+    return returnString;
 }
 
 void GameMap::saveGames()
@@ -132,35 +77,15 @@ void GameMap::saveGames()
     gameFile.close();
 }
 
-std::unordered_map<std::size_t, Game::mGameData>::iterator GameMap::findGame()
+std::unordered_map<std::size_t, Game::mGameData>::iterator GameMap::findGame(const std::string& title)
 {
-    bool userReattempt{ 1 };
-    while (userReattempt) { 
-        std::cout << "Enter the title of the game you want to find: ";
-        std::string userInputTitle;
-        std::cin >> userInputTitle;
-
-        std::size_t key{ generateKey(userInputTitle) };
-    
-        auto search = gameDataMap.find(key);
-        if (search != gameDataMap.end()) {
-            return search;
-        }
-        else {
-            std::cout << "Game not found.\n";
-            userReattempt = askReattempt();
-        }
-    }    
+    std::size_t key{ generateKey(title) };
+    auto search = gameDataMap.find(key);
+    if (search != gameDataMap.end()) {
+        return search;
+    }  
     
     return std::end(gameDataMap);
-}
-
-bool GameMap::askReattempt()
-{
-    bool reattemptResponse{ 0 };
-    std::cout << "Would you like to reattempt entry? (1/0) ";
-    std::cin >> reattemptResponse;
-    return reattemptResponse;
 }
 
 std::size_t GameMap::generateKey(const std::string& title)
@@ -224,15 +149,13 @@ void GameMap::loadGames()
     }
 }
 
-std::ostream& operator<<(std::ostream& out, const Game::mGameData& gameData)
+void GameMap::deleteGame(const std::string& title)
 {
-    out << gameData.gameTitle << "\nGenre: " << gameData.gameGenre
-        << "\nPlatform: " << gameData.platform << "\nRating: " << gameData.rating
-        << "\nisMultiplayer:  " << gameData.isMultiplayer 
-        << "\nisPlayed: " << gameData.isPlayed
-        << "\nisOwned: " << gameData.isOwned << '\n';
-
-    return out;
+    auto foundBookData{ findGame(title) };
+    if (foundBookData != std::end(gameDataMap)) {
+        gameDataMap.erase(foundBookData);
+        return;
+    }
 }
 
 std::ostream& operator<<(std::ostream& out, std::pair<std::size_t, Game::mGameData> gameDataPair)

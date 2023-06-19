@@ -1,11 +1,7 @@
-#include <cstdlib>
-#include <exception>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <functional>
-#include <string>
-#include <cmath>
 #include "Book.h"
 
 BookMap::BookMap()
