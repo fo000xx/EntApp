@@ -27,7 +27,13 @@ void BookMap::addBook(std::vector<std::string>& rawBookData)
 
     std::size_t key{ generateKey(bookData.bookAuthor, bookData.bookTitle) };
 
-    bookDataMap.insert({key, bookData});
+    auto search = bookDataMap.find(key);
+    if (search == bookDataMap.end()) {
+        bookDataMap.insert({key, bookData});
+    }
+    else {
+        bookDataMap[key] = bookData;
+    }
 }
 
 std::string BookMap::viewBook(const std::string& author, const std::string& title)
@@ -49,55 +55,6 @@ std::string BookMap::viewBook(const std::string& author, const std::string& titl
 
     return returnString;
 }
-
-/*
-void BookMap::editBook(const std::string& author, const std::string& title)
-{
-    auto foundBookData{ findBook(author, title) };
-
-    if (userFieldChoice == "title") {
-        std::cout << "Title updated from: " << foundBookData->second.bookTitle
-            << " to: " << userValueChoice;
-        foundBookData->second.bookTitle = userValueChoice;
-        
-        auto nodeHandler = bookDataMap.extract(foundBookData);
-        nodeHandler.key() = generateKey(foundBookData->second.bookTitle, foundBookData->second.bookAuthor);
-        bookDataMap.insert(std::move(nodeHandler));
-    }
-    else if (userFieldChoice == "author") {
-        std::cout << "Author updated from: " << foundBookData->second.bookAuthor
-            << " to: " << userValueChoice;
-        foundBookData->second.bookAuthor = userValueChoice;
-        
-        auto nodeHandler = bookDataMap.extract(foundBookData);
-        nodeHandler.key() = generateKey(foundBookData->second.bookTitle, foundBookData->second.bookAuthor);
-        bookDataMap.insert(std::move(nodeHandler));
-    }
-    else if (userFieldChoice == "series") {
-        std::cout << "Series updated from:" << foundBookData->second.series
-            << " to: " << userValueChoice;
-        foundBookData->second.series = userValueChoice;
-    }
-    else if (userFieldChoice == "genre") {
-        std::cout << "Genre updated from: " << foundBookData->second.genre
-            << " to: " << userValueChoice;
-        foundBookData->second.genre = userValueChoice;
-    }
-    else if (userFieldChoice == "rating") {
-        std::cout << "Rating updated from: " << foundBookData->second.rating
-            << " to: " << userValueChoice;
-        foundBookData->second.rating = std::stoi(userValueChoice);
-    }
-    else if (userFieldChoice == "isRead") {
-        std::cout << "isRead updated from: " << foundBookData->second.isRead
-            << " to: " << userValueChoice;
-        foundBookData->second.isRead = [](std::string userValueChoice) -> bool {
-            return (userValueChoice == "1") ? true : false;
-        };
-    }
-    std::cout << '\n';
-}
-*/
 
 void BookMap::saveBooks()
 {
@@ -190,22 +147,13 @@ void BookMap::loadBooks()
     }
 }
 
-void BookMap::deleteBook(const std::string &author, const std::string &title)
+void BookMap::deleteBook(const std::string& author, const std::string& title)
 {
     auto foundBookData{ findBook(author, title) };
     if (foundBookData != std::end(bookDataMap)) {
         bookDataMap.erase(foundBookData);
         return;
     }
-}
-
-std::ostream& operator<<(std::ostream& out, const Book::mBookData& bookData)
-{
-    out << bookData.bookAuthor << ": " << bookData.bookTitle
-        << "\nSeries: " << bookData.series << "\nGenre: " << bookData.genre
-        << "\nRating: " << bookData.rating << "\nisRead: " << bookData.isRead << '\n';
-
-    return out;
 }
 
 std::ostream& operator<<(std::ostream& out, std::pair<std::size_t, Book::mBookData> bookDataPair)

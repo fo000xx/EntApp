@@ -21,7 +21,6 @@ public:
     };
 
 private:
-    friend std::ostream& operator<<(std::ostream& out, const Book::mBookData& bookData);
     friend std::ostream& operator<<(std::ostream& out, std::pair<std::size_t, Book::mBookData> bookDataPair);
 };
 
@@ -30,7 +29,7 @@ class BookMap
 public:
     BookMap();
     
-    void addBook(std::vector<std::string>& bookData);
+    void addBook(std::vector<std::string>& rawBookData);
     std::string viewBook(const std::string& author, const std::string& title);
     void editBook(const std::string& author, const std::string& title);
     void saveBooks();
@@ -43,17 +42,6 @@ private:
     std::size_t generateKey(const std::string& title, const std::string& author);
     void convertLower(std::string& s);
     void loadBooks();
-    
-    template<typename T>
-    void takeUserInput(T& valueToUpdate)
-    {
-        std::cin.clear();
-        std::cin >> valueToUpdate;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-
-    friend std::ostream& operator<<(std::ostream& out, const Book::mBookData& bookData);
-    friend std::ostream& operator<<(std::ostream& out, std::pair<std::size_t, Book::mBookData> bookDataPair);
 };
 
 #endif

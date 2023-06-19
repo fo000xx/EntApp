@@ -13,10 +13,10 @@ The data will be stored in a redis-like app that communicates to the client usin
 * COMPLETE Receive commands from client
 * For Books: 
     - COMPLETE Add functionality to receive a GET command and return a struct of information
-    - Add functionality to receive a SET command and add a new struct of information
-    - Add functionality to receive a SET command and EDIT an entry if it already exists
-    - Add functionality to receive a DEL command and remove an item
-* Repeat above for Screens
+    - COMPLETE Add functionality to receive a SET command and add a new struct of information
+    - COMPLETE Add functionality to receive a SET command and EDIT an entry if it already exists
+    - COMPLETE Add functionality to receive a DEL command and remove an item
+* COMPLETE Repeat above for Screens
 * Repeat above for Games
 * Add a separate thread that saves the data on a regular interval
 * Tidy up server:

@@ -52,7 +52,7 @@ void tcpConnection::writeOutgoing()
 
 void tcpConnection::writeHandler(const boost::system::error_code& errorMessage)
 {
-    if (errorMessage) {
+if (errorMessage) { 
         std::cout << errorMessage << '\n';
     }
 }
@@ -70,7 +70,7 @@ void tcpConnection::parseAndActionCommand()
         manageBooks();
     }
     else if (mSplitStrings[0] == "screens") {
-        //manageScreens();
+        manageScreens();
     }
     else if (mSplitStrings[0] == "games") {
         //manageGames();
@@ -87,60 +87,30 @@ void tcpConnection::manageBooks()
         mResponse = mServer.mBooks.viewBook(mSplitStrings[2], mSplitStrings[3]);
     }
     if (mSplitStrings[1] == "set") {
-        //if book doesn't exist, add new
-        //if book exists, edit old
         mServer.mBooks.addBook(mSplitStrings);
+        mResponse = "Book entry set.\n";
     }
     if (mSplitStrings[1] == "del") {
         mServer.mBooks.deleteBook(mSplitStrings[2], mSplitStrings[3]);
+        mResponse = "Book deleted.\n";
     }
 
     writeOutgoing();
 }
 
-/*
-//probably should be refactored if this was to scale up.
-void tcpConnection::parseAndActionCommand()
+void tcpConnection::manageScreens()
 {
-    std::stringstream cmdStream{ mReceivedMsg };
-    std::string command{}, key{}, value{};
+    if (mSplitStrings[1] == "get") {
+        mResponse = mServer.mScreens.viewScreens(mSplitStrings[2], mSplitStrings[3]);
+    }
+    if (mSplitStrings[1] == "set") {
+        mServer.mScreens.addScreen(mSplitStrings);
+        mResponse = "Screen entry set.\n";
+    }
+    if (mSplitStrings[1] == "del") {
+        mServer.mScreens.deleteScreen(mSplitStrings[2], mSplitStrings[3]);
+        mResponse = "Screen entry deleted.\n";
+    }
 
-    cmdStream >> command >> key;
-    if (command == "set") {
-        cmdStream >> value;
-        if (!key.empty() && !value.empty()) {
-            gDemoMap::DemoMap.insert({key, value});
-            mResponse = ("Values added");
-        }
-        else {
-            mResponse = "Invalid format, please try set KEY VALUE";
-        }
-    }
-    else if (command == "get") {
-        auto keyExists {gDemoMap::DemoMap.find(key)};
-        if (keyExists != gDemoMap::DemoMap.end()) {
-            mResponse = (keyExists->first + " " + keyExists->second);
-        }
-        else {
-           mResponse = ("Key not found");
-        }
-    }
-    else if (command == "del") {
-        auto keyExists {gDemoMap::DemoMap.find(key)};
-        if (keyExists != gDemoMap::DemoMap.end()) {
-            gDemoMap::DemoMap.erase(key);
-            mResponse = ("key/value deleted");
-        }
-        else { 
-            mResponse = ("key not found");
-        } 
-    }
-    else {
-        mResponse = ("invalid command");
-    }
-    
-    writeOutgoing(); //message needs to be sent AFTER actions are completed.
-    //for testing
-    for (auto elem : gDemoMap::DemoMap) { std::cout << elem.first << " " << elem.second << '\n'; }
+    writeOutgoing();
 }
-*/

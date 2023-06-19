@@ -5,6 +5,7 @@
 #include <limits>
 #include <iostream>
 #include <unordered_map>
+#include <vector>
 
 class Screen
 {
@@ -18,9 +19,7 @@ public:
     };
 
 private:
-    friend std::ostream& operator<<(std::ostream& out, const Screen::mScreenData& screenData);
     friend std::ostream& operator<<(std::ostream& out, std::pair<std::size_t,  Screen::mScreenData> screenData);
-
 };
 
 class ScreenMap
@@ -28,31 +27,18 @@ class ScreenMap
 public:
     ScreenMap();
 
-    void addScreen();
-    void viewScreens();
-    void editScreen();
+    void addScreen(std::vector<std::string>& rawScreenData);
+    std::string viewScreens(const std::string& type, const std::string& title);
     void saveScreens();
+    void deleteScreen(const std::string& type, const std::string& title);
 
 private:
     std::unordered_map<std::size_t, Screen::mScreenData> screenDataMap{};
 
-    std::unordered_map<std::size_t, Screen::mScreenData>::iterator findScreen();
-    bool askReattempt();
-    std::size_t generateKey(const std::string& title, const std::string& type);
+    std::unordered_map<std::size_t, Screen::mScreenData>::iterator findScreen(const std::string& type, const std::string& title);
+    std::size_t generateKey(const std::string& type, const std::string& title);
     void convertLower(std::string& s);
     void loadScreens();
-
-    template<typename T>
-    void takeUserInput(T& valueToUpdate)
-    {
-        std::cin.clear();
-        std::cin >> valueToUpdate;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-
-    friend std::ostream& operator<<(std::ostream& out, const Screen::mScreenData& screenData);
-    friend std::ostream& operator<<(std::ostream& out, std::pair<std::size_t, Screen::mScreenData> screenDataPair);
-
 };
 
 #endif

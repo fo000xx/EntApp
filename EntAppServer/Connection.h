@@ -30,6 +30,8 @@ private:
     void writeOutgoing();
     void writeHandler(const boost::system::error_code& errorMessage);
     void manageBooks();
+    void manageScreens();
+    void manageGames();
 
     tcp::socket mSocket;
     boost::asio::streambuf mReceiveBuffer;

@@ -13,83 +13,43 @@ ScreenMap::ScreenMap()
   loadScreens(); 
 }
 
-void ScreenMap::addScreen()
+void ScreenMap::addScreen(std::vector<std::string>& rawScreenData)
 {
     Screen::mScreenData screenData;
-    std::cout << "To add a TV/Film, please provide the following details:\n Title: ";
-    takeUserInput(screenData.title);
-    std::cout << "Type (TV/Film - beware this field is case sensitive): ";
-    takeUserInput(screenData.type);
-    std::cout << "Rating: ";
-    takeUserInput(screenData.rating);
-    std::cout << "isWatched (1/0): ";
-    takeUserInput(screenData.isWatched);
+    screenData.title = rawScreenData[3];
+    screenData.type = rawScreenData[2];
+    screenData.rating = std::stoi(rawScreenData[4]);
+    screenData.isWatched = [](std::string rawScreenData[5]) -> bool {
+            return (rawScreenData[7] == "1") ? true : false;
+        };
 
-    std::size_t key{ generateKey(screenData.title, screenData.type) };
-
-    screenDataMap.insert({key, screenData});
-}
-
-void ScreenMap::viewScreens()
-{
-    bool userReattempt{ 1 };
-    while (userReattempt) {
-        auto foundScreenData{ findScreen() };
-        if (foundScreenData != std::end(screenDataMap)) {
-            std::cout << foundScreenData->second;
-            return;
-        }
-        else {
-            userReattempt = askReattempt();
-        }
+    std::size_t key{ generateKey(screenData.type, screenData.title) };
+    
+    auto search = screenDataMap.find(key);
+    if (search == screenDataMap.end()) {
+        screenDataMap.insert({key, screenData});
+    }
+    else {
+        screenDataMap[key] = screenData;
     }
 }
 
-void ScreenMap::editScreen()
+std::string ScreenMap::viewScreens(const std::string& type, const std::string& title)
 {
-    auto foundScreenData{ findScreen() };
+    std::string returnString{};
+    
+    auto foundScreenData{ findScreen(type, title) };
     if (foundScreenData != std::end(screenDataMap)) {
-        std::string userFieldChoice{};
-        std::string userValueChoice{};
-        std::cout << "Which field would you like to edit? ";
-        std::cin >> userFieldChoice;
-        std::cout << "What would you like to change " << userFieldChoice << " to? ";
-        std::cin >> userValueChoice;
-
-        convertLower(userFieldChoice);
-
-        if (userFieldChoice == "title") {
-            std::cout << "Title updated from: " << foundScreenData->second.title
-                << " to: " << userValueChoice;
-            foundScreenData->second.title = userValueChoice;
-            
-            auto nodeHandler = screenDataMap.extract(foundScreenData);
-            nodeHandler.key() = generateKey(foundScreenData->second.title, foundScreenData->second.type);
-            screenDataMap.insert(std::move(nodeHandler));
-        }
-        else if (userFieldChoice == "type") {
-            std::cout << "Type updated from: " << foundScreenData->second.type
-                << " to: " << userValueChoice;
-            foundScreenData->second.type = userValueChoice;
-            
-            auto nodeHandler = screenDataMap.extract(foundScreenData);
-            nodeHandler.key() = generateKey(foundScreenData->second.title, foundScreenData->second.type);
-            screenDataMap.insert(std::move(nodeHandler));
-        }
-        else if (userFieldChoice == "rating") {
-            std::cout << "Rating updated from: " << foundScreenData->second.rating
-                << " to: " << userValueChoice;
-            foundScreenData->second.rating = std::stoi(userValueChoice);
-        }
-        else if (userFieldChoice == "isRead") {
-            std::cout << "isRead updated from: " << foundScreenData->second.isWatched
-                << " to: " << userValueChoice;
-            foundScreenData->second.isWatched = [](std::string userValueChoice) -> bool {
-                return (userValueChoice == "1") ? true : false;
-            };
-        }
-        std::cout << '\n';
+        returnString = (foundScreenData->second.title + ','
+            + foundScreenData->second.type + ','
+            + std::to_string(foundScreenData->second.rating) + ','
+            + std::to_string(foundScreenData->second.isWatched));
     }
+    else {
+        returnString = "TV/Film not found";
+    }
+
+    return returnString;
 }
 
 void ScreenMap::saveScreens()
@@ -111,49 +71,29 @@ void ScreenMap::saveScreens()
     screenFile.close();
 }
 
-std::unordered_map<std::size_t, Screen::mScreenData>::iterator ScreenMap::findScreen()
+std::unordered_map<std::size_t, Screen::mScreenData>::iterator ScreenMap::findScreen(const std::string& type, const std::string& title)
 {
-    bool userReattempt{ 1 };
-    while (userReattempt) { 
-        std::cout << "Enter the title of the TV/Film you want to find: ";
-        std::string userInputTitle;
-        std::cin >> userInputTitle;
-        std::cout << "and the type (TV/Film - this is case sensitive): ";
-        std::string userInputType;
-        std::cin >> userInputType;
-
-        std::size_t key{ generateKey(userInputTitle, userInputType) };
+    std::size_t key{ generateKey(type, title) };
     
-        auto search = screenDataMap.find(key);
-        if (search != screenDataMap.end()) {
-            return search;
-        }
-        else {
-            std::cout << "Screen not found.\n";
-            userReattempt = askReattempt();
-        }
-    }    
+    auto search = screenDataMap.find(key);
+    if (search != screenDataMap.end()) {
+        return search;
+    }
     
     return std::end(screenDataMap);
 }
- 
-bool ScreenMap::askReattempt()
-{
-    bool reattemptResponse{ 0 };
-    std::cout << "Would you like to reattempt entry? (1/0) ";
-    std::cin >> reattemptResponse;
-    return reattemptResponse;
-}
 
-std::size_t ScreenMap::generateKey(const std::string& title, const std::string& type)
+std::size_t ScreenMap::generateKey(const std::string& type, const std::string& title)
 {
     std::string key(type + title);
+    std::cout << '\n' << type << "--" << title << '\n';
     std::size_t originalHash{ std::hash<std::string>{}(key)};
 
     std::string hashString{ std::to_string(originalHash) };
     std::string truncHashString{ hashString.substr(0,9) };
     int truncatedHash{ std::stoi(truncHashString) };
     
+    std::cout << '\n' << truncatedHash << '\n';
     return truncatedHash;
 }
 
@@ -199,12 +139,13 @@ void ScreenMap::loadScreens()
     }
 }
 
-std::ostream& operator<<(std::ostream& out, const Screen::mScreenData& screenData)
+void ScreenMap::deleteScreen(const std::string& type, const std::string& title)
 {
-    out << screenData.title << "\nType: " << screenData.type
-        << "\nRating: " << screenData.rating << "\nisWatched: " << screenData.isWatched << '\n';
-
-    return out;
+    auto foundScreenData{ findScreen(type, title) };
+    if (foundScreenData != std::end(screenDataMap)) {
+        screenDataMap.erase(foundScreenData);
+        return;
+    }
 }
 
 std::ostream& operator<<(std::ostream& out, std::pair<std::size_t, Screen::mScreenData> screenDataPair)

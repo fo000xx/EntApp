@@ -106,6 +106,17 @@ std::string Client::getContentKey(const std::string& contentType)
         
         rawKey = (author + ',' + title);
     }
+
+    if (contentType == "screens") {
+        std::string type{};
+        std::string title{};
+        std::cout << "Please provide the type (TV/Film) and title.\nType: ";
+        std::cin >> type;
+        std::cout << "Title: ";
+        std::cin >> title;
+
+        rawKey = (type + ',' + title);
+    }
     return rawKey;
 }
 
@@ -140,6 +151,27 @@ std::string Client::getContentData(const std::string& contentType)
         std::cin >> isRead;
 
         finalData = (author + ',' + title + ',' + series + ',' + genre + ',' + rating + ',' + isRead);
+    }
+
+    if (contentType == "screens") {
+        std::string type{};
+        std::string title{};
+        std::string rating{};
+        std::string isWatched{};
+
+        std::cout << "To add a screen, please provide the following details:\n Type (TV/Film): ";
+        std::cin >> type;
+
+        std::cout << "Title: ";
+        std::cin >> title;
+
+        std::cout << "Rating (1-5): ";
+        std::cin >> rating;
+
+        std::cout << "isWatched (1/0): ";
+        std::cin >> isWatched;
+
+        finalData = (type + ',' + title + ',' + rating + ',' + isWatched);
     }
     return finalData;
 }
