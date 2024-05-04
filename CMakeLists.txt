@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.28.4)
+cmake_minimum_required(VERSION 3.29.2)
 project(EntApp VERSION 2.0.0)
 
-target_link_libraries(sqlite3 /usr/include/sqlite3.h)
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
+
 add_executable(EntApp src/main.cpp src/databaseCommon.cpp)
+target_link_libraries(EntApp PRIVATE unofficial::sqlite3::sqlite3)
